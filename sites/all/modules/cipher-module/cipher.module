@@ -1,0 +1,63 @@
+<?php
+
+function cipher_menu() {
+    $items['cipher'] = array(
+        'title' => 'Cipher Encryption',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('cipher_shift_form'), // hook submit has to look like 'game_form_submit' to match given argument 'game_form'
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+    );
+    $items['cipher_result_page'] = array(
+        'title' => 'Results',
+        'page callback' => 'show_results',
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function cipher_shift_form() {
+    $form['cipher_value'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Shift value'),
+        '#description' => t('Enter a shift value'),
+        '#element_validate' => array('element_validate_integer_positive'),
+        '#required' => TRUE,
+    );
+    $form['cipher_direction'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Shift Direction'),
+        '#description' => t('Enter a shift direction - either right or left - to encrypt the letters of your word'),
+        // '#element_validate' => array('element_validate_integer_positive', 'element_validate_coord_range', 'queen_attack_form_validate'),
+        '#required' => TRUE,
+    );
+    $form['cipher_phrase'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Phrase'),
+        '#description' => t('Enter the phrase you would like to encrypt'),
+        // '#element_validate' => array('element_validate_integer_positive', 'element_validate_coord_range', 'queen_attack_form_validate'),
+        '#required' => TRUE,
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Go',
+    );
+
+    return $form;
+}
+
+function cipher_shift_form_submit($form, &$form_state) {
+    $value = (int)$form_state['values']['cipher_value'];
+    $direction = $form_state['values']['cipher_direction'];
+    $phrase = $form_state['values']['cipher_phrase'];
+
+    // array of stored input coordinates
+    $form_inputs = array($value, $direction, $phrase);
+    $_SESSION['global_form_inputs'] = $form_inputs;
+    $form_state['redirect'] = 'cipher_result_page';
+}
+
+function show_results() {
+    return "Your phrase " . $_SESSION['global_form_inputs'][2] . ' encrypted is ';
+}
