@@ -28,16 +28,16 @@ function cipher_shift_form() {
     $form['cipher_direction'] = array(
         '#type' => 'textfield',
         '#title' => t('Shift Direction'),
-        '#description' => t('Enter a shift direction - either right or left - to encrypt the letters of your word'),
-        // '#element_validate' => array('element_validate_integer_positive', 'element_validate_coord_range', 'queen_attack_form_validate'),
+        // '#description' => t('Enter a shift direction - either right or left - to encrypt the letters of your word'),
         '#required' => TRUE,
     );
     $form['cipher_phrase'] = array(
         '#type' => 'textfield',
         '#title' => t('Phrase'),
         '#description' => t('Enter the phrase you would like to encrypt'),
-        // '#element_validate' => array('element_validate_integer_positive', 'element_validate_coord_range', 'queen_attack_form_validate'),
+        // '#element_validate' => array('element_validate_phrase'),
         '#required' => TRUE,
+
     );
     $form['submit'] = array(
         '#type' => 'submit',
@@ -50,14 +50,37 @@ function cipher_shift_form() {
 function cipher_shift_form_submit($form, &$form_state) {
     $value = (int)$form_state['values']['cipher_value'];
     $direction = $form_state['values']['cipher_direction'];
-    $phrase = $form_state['values']['cipher_phrase'];
+    $phrase_array = str_split($form_state['values']['cipher_phrase']);
 
-    // array of stored input coordinates
-    $form_inputs = array($value, $direction, $phrase);
-    $_SESSION['global_form_inputs'] = $form_inputs;
-    $form_state['redirect'] = 'cipher_result_page';
+    // $form_inputs = array($value, $direction, $phrase);
+    $alphabet = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z');
+
+    if ($direction == 'right') {
+        $alphabet_position = array_flip($alphabet);
+            for($phrase_index = 0; $phrase_index < count($phrase_array); $phrase_index++){
+                $cipher_phrase.= $alphabet[($alphabet_position[$phrase_array[$phrase_index]]+ $value) % 26];
+                $_SESSION['global_phrase_input'] = $cipher_phrase;
+                $form_state['redirect'] = 'cipher_result_page';
+            }
+    }
+
+    elseif ($direction == 'left') {
+        $alphabet_position = array_flip($alphabet);
+            for($phrase_index = 0; $phrase_index < count($phrase_array); $phrase_index++){
+                $cipher_phrase.=$alphabet[(26 + $alphabet_position[$phrase_array[$phrase_index]] - $value) % 26];
+                $_SESSION['global_phrase_input'] = $cipher_phrase;
+                $form_state['redirect'] = 'cipher_result_page';
+            }
+    }
+
 }
 
 function show_results() {
-    return "Your phrase " . $_SESSION['global_form_inputs'][2] . ' encrypted is ';
+    $output = $_SESSION['global_phrase_input'];
+    return $output;
+    // echo '<pre>';
+    // var_dump($output);
+    // echo '</pre>';
+    // exit;
+    // return $output;
 }
