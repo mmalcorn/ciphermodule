@@ -36,7 +36,7 @@ function cipher_shift_form() {
         '#type' => 'textfield',
         '#title' => t('Phrase'),
         '#description' => t('Enter the phrase you would like to encrypt'),
-        // '#element_validate' => array('element_validate_phrase'),
+        '#element_validate' => array('element_validate_phrase'),
         '#required' => TRUE,
 
     );
@@ -53,6 +53,15 @@ function element_validate_direction($element){
     if (!preg_match($direction_option, $element['#value'])) {
         form_error($element, 'Value must be either right or left');
     }
+}
+
+function element_validate_phrase($element){
+        $user_phrase = explode(" ", $element['#value']);
+        foreach ($user_phrase as $word){
+            if(!ctype_alpha($word)){
+                form_error($element, t('Only phrases with letters can be encrypted.  Please enter a phrase that contains only letters.'));
+            }
+        }
 }
 
 function cipher_shift_form_submit($form, &$form_state) {
