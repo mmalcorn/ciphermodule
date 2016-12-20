@@ -59,7 +59,7 @@ function element_validate_phrase($element){
         $user_phrase = explode(" ", $element['#value']);
         foreach ($user_phrase as $word){
             if(!ctype_alpha($word)){
-                form_error($element, t('Only phrases with letters can be encrypted.  Please enter a phrase that contains only letters.'));
+                form_error($element, t('Error: no spaces or special characters allowed.  Only a phrase containing letters can be encrypted'));
             }
         }
 }
